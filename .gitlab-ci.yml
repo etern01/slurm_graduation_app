@@ -1,6 +1,6 @@
 variables:
   K8S_API_URL: https://158.160.109.92:6443
-  DOCKER_REGISTRY: registry.gitlab.com
+  DOCKER_REGISTRY: s015605.gitlab.yandexcloud.net/
   DOCKER_USERNAME: $CI_REGISTRY_USER
   DOCKER_PASSWORD: $CI_REGISTRY_PASSWORD
   FRONTEND_NAME: yelb-ui
@@ -51,6 +51,7 @@ cleanup:
   when: always
 
 push:
+  image: docker:latest
   stage: push
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
