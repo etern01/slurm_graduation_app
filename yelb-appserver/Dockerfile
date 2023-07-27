@@ -5,7 +5,7 @@ FROM ruby:2.6.10-slim-buster
 # Set the working directory to /app
 WORKDIR /app
 
-COPY yelb-appserver.rb yelb-appserver.rb 
+ 
 COPY Gemfile Gemfile
 
 
@@ -26,6 +26,7 @@ RUN gem install pg --   --with-pg-lib=/usr/lib
 RUN gem install aws-sdk-dynamodb pg --no-document
 # Set the working directory to /
 COPY modules modules
+COPY yelb-appserver.rb yelb-appserver.rb
 WORKDIR /
 ADD startup.sh startup.sh
 
