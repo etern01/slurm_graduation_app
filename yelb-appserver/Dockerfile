@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY yelb-appserver.rb yelb-appserver.rb 
 COPY Gemfile Gemfile
-COPY modules modules
+
 
 ENV LANG=en_us.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -25,6 +25,7 @@ RUN gem install pg --   --with-pg-lib=/usr/lib
 ### this installs the AWS SDK for DynamoDB (so that appserver can talk to DDB Vs the default Postgres/Redis)
 RUN gem install aws-sdk-dynamodb pg --no-document
 # Set the working directory to /
+COPY modules modules
 WORKDIR /
 ADD startup.sh startup.sh
 
