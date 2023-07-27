@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Values.yelbappserver.name }}
+    chart: "{{ .Values.yelbappserver.name}}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: app
+  name: {{ .Values.yelbappserver.name }}
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.yelbappserver.service.port }}
+    protocol: TCP
+    targetPort: {{ .Values.yelbappserver.service.app_port }}
+  selector:
+    app: {{ .Values.yelbappserver.name }}
+    release: {{ .Release.Name }}
+    component: app
+  sessionAffinity: None
+  type: ClusterIP

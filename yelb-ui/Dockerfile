@@ -1,5 +1,4 @@
 FROM node:14.21-buster
-MAINTAINER massimo@it20.info
 
 WORKDIR /
 

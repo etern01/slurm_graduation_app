@@ -1,0 +1,46 @@
+apiVersion:  apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.redis.name }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: app
+  name: {{ .Values.redis.name}}
+spec:
+  progressDeadlineSeconds: 180
+  replicas: {{ .Values.yelbui.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.redis.name }}
+      release: {{ .Release.Name }}
+      component: app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  revisionHistoryLimit: 5
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: {{ .Values.redis.name }}
+        release: {{ .Release.Name }}
+        component: app
+    spec:
+      containers:
+      - image: {{ .Values.redis.image }}:{{ .Values.redis.imageTag}}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Values.redis.name }}
+        ports:
+        - containerPort: {{ .Values.redis.service.port }}
+          name: http
+          protocol: TCP
+        resources:
+{{ toYaml .Values.redis.resources | indent 12 }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 20
+      

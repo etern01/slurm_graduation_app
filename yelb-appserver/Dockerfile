@@ -1,5 +1,4 @@
 FROM ruby:2.6.10-slim-buster
-MAINTAINER massimo@it20.info
 
 ################## BEGIN INSTALLATION ######################
 

@@ -1,19 +1,20 @@
+---
 apiVersion:  apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: {{ .Chart.Name }}
+    app: {{ .Values.yelbappserver.name }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: app
-  name: {{ .Release.Name }}
+  name: {{ .Values.yelbappserver.name }}
 spec:
   progressDeadlineSeconds: 180
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.yelbappserver.replicas }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}
+      app: {{ .Values.yelbappserver.name }}
       release: {{ .Release.Name }}
       component: app
   strategy:
@@ -26,7 +27,7 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        app: {{ .Chart.Name }}
+        app: {{ .Values.yelbappserver.name }}
         release: {{ .Release.Name }}
         component: app
     spec:
@@ -43,18 +44,18 @@ spec:
               key: {{ $key | lower | replace "_" "-" }}
               name: {{ $val }}
         {{- end }}
-        image: {{ .Values.image }}:{{ .Values.imageTag}}
+        image: {{ .Values.yelbappserver.image }}:{{ .Values.yelbappserver.imageTag}}
         imagePullPolicy: IfNotPresent
-        name: app
+        name: {{ .Values.yelbappserver.name }}
         ports:
-        - containerPort: {{ .Values.service.app_port }}
+        - containerPort: {{ .Values.yelbappserver.service.app_port }}
           name: http
           protocol: TCP
         readinessProbe:
           failureThreshold: 30
           httpGet:
-            path: /
-            port: {{ .Values.service.app_port }}
+            path: /api/hostname
+            port: {{ .Values.yelbappserver.service.app_port }}
             scheme: HTTP
           periodSeconds: 10
           successThreshold: 1
@@ -63,16 +64,16 @@ spec:
           initialDelaySeconds: 90
           failureThreshold: 3
           httpGet:
-            path: /
-            port: {{ .Values.service.app_port }}
+            path: /api/hostname
+            port: {{ .Values.yelbappserver.service.app_port }}
             scheme: HTTP
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 2
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.yelbappserver.resources | indent 12 }}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       terminationGracePeriodSeconds: 20
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecret }}
+        - name: {{ .Values.yelbappserver.imagePullSecret }}

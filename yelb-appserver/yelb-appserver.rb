@@ -31,8 +31,10 @@ disable :protection
 configure :production do
   set :redishost, "redis-server"
   set :port, 4567
-  set :yelbdbhost => "yelb-db"
-  set :yelbdbport => 5432
+  set :yelbdbhost => ENV['YELB_DB_SERVER_ENDPOINT']
+  set :yelbdbport => ENV['YELB_DB_SERVER_PORT']
+  set :yelbdbuser: => ENV['YELB_DB_SERVER_USER']
+  set :yelbdbpass: => ENV['YELB_DB_SERVER_PASSWORD']
   set :yelbddbrestaurants => ENV['YELB_DDB_RESTAURANTS']
   set :yelbddbcache => ENV['YELB_DDB_CACHE']
   set :awsregion => ENV['AWS_REGION']
