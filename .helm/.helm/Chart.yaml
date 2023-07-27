@@ -1,0 +1,9 @@
+description: Generic Helm chart for Kubernetes.
+home: s015605
+maintainers:
+- email: lvovas@gmail.com
+  name: Alexandr Lvov
+name: app
+sources:
+- https://s015605.gitlab.yandexcloud.net/etern0/graduation_work
+version: 1.0.0

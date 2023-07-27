@@ -1,0 +1,25 @@
+# This is a YAML-formatted file.
+
+image: s015605.gitlab.yandexcloud.net:5050/etern0/graduation_work/yelb-ui
+imageTag: main93
+imagePullSecret: cicd-gitlab-registry
+
+# Resources for app. Limits is the maximum number of resources that app cas use.
+# And requests is resources that will be granted to the app at start time.
+replicas: 3
+
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+service:
+  app_port: 8080
+  port: 80
+
+ingress:
+  host: s015605.site
