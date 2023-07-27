@@ -4,7 +4,7 @@ def restaurant_adapter(event:, context:)
     $yelbdbhost = ENV['yelbdbhost']
     $yelbdbport = ENV['yelbdbport']
     $yelbdbuser = ENV['yelbdbuser']
-    $yelbdname = ENV['yelbdname']
+    $yelbdbpass = ENV['yelbdbpass']
     $yelbdname = ENV['yelbdname']
 
     $yelbddbrestaurants = ENV['yelbddbrestaurants']
