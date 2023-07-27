@@ -19,14 +19,14 @@ build:backend:
   image: docker:latest
   script:
     - cd $BACKEND_NAME
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$BACKEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID .
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID .
 
 build:frontend:
   stage: build
   image: docker:latest
   script:
     - cd $FRONTEND_NAME
-    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$FRONTEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID .
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID .
 
 test:
   stage: test
@@ -56,8 +56,8 @@ push:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$BACKEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$FRONTEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
   only:
     - main
 
