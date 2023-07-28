@@ -4,6 +4,26 @@ variables:
   BACKEND_NAME: yelb-appserver
   APP_NAME:  yelb
 
+.rules:
+  rules:
+      # Использование rules для определения переменных в зависимости от ветки
+      - if: '$CI_COMMIT_REF_NAME == "main"'
+        variables:
+          YELB_DB_SERVER_ENDPOINT: $DB_SERVER
+          YELB_DB_SERVER_USER: $DB_SERVER_USER
+          YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD
+          YELB_DB_NAME: $DB_NAME
+          DEPLOY_VARIABLE: production
+          DEPLOY_URL: s015605.site
+      - if: '$CI_COMMIT_REF_NAME != "main"'
+        variables:
+          YELB_DB_SERVER_ENDPOINT: $DB_SERVER
+          YELB_DB_SERVER_USER: $DB_SERVER_USER_DEV
+          YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD_DEV
+          YELB_DB_NAME: $DB_NAME_DEV
+          DEPLOY_VARIABLE: develop
+          DEPLOY_URL: develop.s015605.site
+
 stages:
   - lint
   - build
@@ -40,14 +60,8 @@ build:backend:
   script:
     - cd $BACKEND_NAME
     - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME-$CI_ENVIRONMENT_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID .
-  rules:
-    # Использование rules для определения переменных в зависимости от ветки
-    - if: '$CI_COMMIT_REF_NAME == "main"'
-      variables:
-        DEPLOY_VARIABLE: production
-    - if: '$CI_COMMIT_REF_NAME != "main"'
-      variables:
-        DEPLOY_VARIABLE: develop
+  extends:
+    - .rules
 
 build:frontend:
   environment:
@@ -57,14 +71,8 @@ build:frontend:
   script:
     - cd $FRONTEND_NAME
     - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME-$CI_ENVIRONMENT_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID .
-  rules:
-    # Использование rules для определения переменных в зависимости от ветки
-    - if: '$CI_COMMIT_REF_NAME == "main"'
-      variables:
-        DEPLOY_VARIABLE: production
-    - if: '$CI_COMMIT_REF_NAME != "main"'
-      variables:
-        DEPLOY_VARIABLE: develop
+  extends:
+    - .rules
 
 test:
   environment:
@@ -80,14 +88,8 @@ test:
         --abort-on-container-exit
         --exit-code-from test
         --quiet-pull
-  rules:
-    # Использование rules для определения переменных в зависимости от ветки
-    - if: '$CI_COMMIT_REF_NAME == "main"'
-      variables:
-        DEPLOY_VARIABLE: production
-    - if: '$CI_COMMIT_REF_NAME != "main"'
-      variables:
-        DEPLOY_VARIABLE: develop
+  extends:
+    - .rules
 
 
 cleanup:
@@ -109,14 +111,8 @@ push:
   script:
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME-$CI_ENVIRONMENT_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
     - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME-$CI_ENVIRONMENT_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-  rules:
-    # Использование rules для определения переменных в зависимости от ветки
-    - if: '$CI_COMMIT_REF_NAME == "main"'
-      variables:
-        DEPLOY_VARIABLE: production
-    - if: '$CI_COMMIT_REF_NAME != "main"'
-      variables:
-        DEPLOY_VARIABLE: develop
+  extends:
+    - .rules
 
 
 deploy:
@@ -151,25 +147,8 @@ deploy:
         --atomic
         --debug
         --namespace $APP_NAME-$CI_ENVIRONMENT_NAME
-  rules:
-    # Использование rules для определения переменных в зависимости от ветки
-    - if: '$CI_COMMIT_REF_NAME == "main"'
-      variables:
-        YELB_DB_SERVER_ENDPOINT: $DB_SERVER
-        YELB_DB_SERVER_USER: $DB_SERVER_USER
-        YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD
-        YELB_DB_NAME: $DB_NAME
-        DEPLOY_VARIABLE: production
-        DEPLOY_URL: s015605.site
-    - if: '$CI_COMMIT_REF_NAME != "main"'
-      variables:
-        YELB_DB_SERVER_ENDPOINT: $DB_SERVER
-        YELB_DB_SERVER_USER: $DB_SERVER_USER_DEV
-        YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD_DEV
-        YELB_DB_NAME: $DB_NAME_DEV
-        DEPLOY_VARIABLE: develop
-        DEPLOY_URL: develop.s015605.site
-
+  extends:
+    - .rules
       
 
 
