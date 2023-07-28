@@ -33,11 +33,11 @@ spec:
     spec:
       containers:
       - env:
-        {{- range $key, $val := .Values.env }}
+        {{- range $key, $val := .Values.yelbappserver.env }}
         - name: {{ $key | quote }}
           value: {{ $val | quote }}
         {{- end }}
-        {{- range $key, $val := .Values.envSecret }}
+        {{- range $key, $val := .Values.yelbappserver.envSecret }}
         - name: {{ $key | quote }}
           valueFrom:
             secretKeyRef:

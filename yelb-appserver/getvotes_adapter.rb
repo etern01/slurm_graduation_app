@@ -3,6 +3,9 @@ require_relative 'modules/getvotes'
 def getvotes_adapter(event:, context:)
     $yelbdbhost = ENV['yelbdbhost']
     $yelbdbport = ENV['yelbdbport']
+    $yelbdbuser = ENV['yelbdbuser']
+    $yelbdbpass = ENV['yelbdbpass']
+    $yelbdbname = ENV['yelbdbname']
     $yelbddbrestaurants = ENV['yelbddbrestaurants']
     $awsregion = ENV['awsregion']
     votes = getvotes()

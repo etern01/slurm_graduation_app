@@ -32,11 +32,11 @@ spec:
     spec:
       containers:
       - env:
-        {{- range $key, $val := .Values.env }}
+        {{- range $key, $val := .Values.yelbui.env }}
         - name: {{ $key | quote }}
           value: {{ $val | quote }}
         {{- end }}
-        {{- range $key, $val := .Values.envSecret }}
+        {{- range $key, $val := .Values.yelbui.envSecret }}
         - name: {{ $key | quote }}
           valueFrom:
             secretKeyRef:
