@@ -72,6 +72,7 @@ deploy:
     - kubectl config set-credentials ci --token=$K8S_CI_TOKEN
     - kubectl config set-context ci --cluster=k8s --user=ci
     - kubectl config use-context ci
+    - kubectl cluster-info
     - helm upgrade --install $APP_NAME .helm
         --set yelbappserver.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME
         --set yelbappserver.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
