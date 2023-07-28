@@ -5,6 +5,7 @@ variables:
   APP_NAME:  yelb
 
 
+
   
 
 stages:
@@ -36,6 +37,8 @@ lint-helm:
 
 
 build:backend:
+  environment:
+    name: $DEPLOY_VARIABLE
   stage: build
   image: docker:latest
   script:
@@ -51,6 +54,8 @@ build:backend:
         DEPLOY_VARIABLE: develop
 
 build:frontend:
+  environment:
+    name: $DEPLOY_VARIABLE
   stage: build
   image: docker:latest
   script:
@@ -66,6 +71,8 @@ build:frontend:
         DEPLOY_VARIABLE: develop
 
 test:
+  environment:
+    name: $DEPLOY_VARIABLE
   stage: test
   image:
     name: docker/compose:1.23.2
