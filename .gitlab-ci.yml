@@ -75,10 +75,17 @@ push:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-  only:
-    - main
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME-$CI_ENVIRONMENT_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+    - docker push $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME-$CI_ENVIRONMENT_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+  rules:
+    # Использование rules для определения переменных в зависимости от ветки
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+      variables:
+        DEPLOY_VARIABLE: production
+    - if: '$CI_COMMIT_REF_NAME != "main"'
+      variables:
+        DEPLOY_VARIABLE: develop
+
 
 deploy:
   stage: deploy
@@ -97,14 +104,14 @@ deploy:
     - kubectl config use-context default
     - kubectl cluster-info
     - helm upgrade --install $APP_NAME .helm
-        --set yelbappserver.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME
+        --set yelbappserver.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME-$CI_ENVIRONMENT_NAME
         --set yelbappserver.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
         --set yelbappserver.env.YELB_DB_SERVER_ENDPOINT=$YELB_DB_SERVER_ENDPOINT
         --set yelbappserver.env.YELB_DB_SERVER_USER=$YELB_DB_SERVER_USER
         --set yelbappserver.env.YELB_DB_SERVER_PASSWORD=$YELB_DB_SERVER_PASSWORD
         --set yelbappserver.env.YELB_DB_NAME=$YELB_DB_NAME
         --set yelbappserver.env.RACK_ENV=$DEPLOY_VARIABLE
-        --set yelbui.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME
+        --set yelbui.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME-$CI_ENVIRONMENT_NAME
         --set yelbui.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
         --set yelbui.env.UI_ENV=prod
         --wait
