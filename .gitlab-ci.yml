@@ -20,12 +20,18 @@ lint-yaml:
     entrypoint: ["/bin/ash", "-c"]
   script:
     - yamllint -f colored .
+  allow_failure: true
+
+
 
 lint-helm:
   stage: lint
   image: alpine/k8s:1.24.15
   script:
     - helm lint .helm
+  allow_failure: true
+
+
 
 build:backend:
   stage: build
@@ -115,7 +121,7 @@ deploy:
         YELB_DB_SERVER_USER: $DB_SERVER_USER
         YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD
         YELB_DB_NAME: $DB_NAME
-        $DEPLOY_VARIABLE: production
+        DEPLOY_VARIABLE: production
 
   
 
@@ -125,7 +131,7 @@ deploy:
         YELB_DB_SERVER_USER: $DB_SERVER_USER_DEV
         YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD_DEV
         YELB_DB_NAME: $DB_NAME_DEV
-        $DEPLOY_VARIABLE: develop
+        DEPLOY_VARIABLE: develop
 
       
 

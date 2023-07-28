@@ -1,4 +1,5 @@
 description: Generic Helm chart for Kubernetes.
+apiVersion: v2
 home: s015605
 maintainers:
 - email: lvovas@gmail.com
