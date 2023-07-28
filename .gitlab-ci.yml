@@ -86,6 +86,7 @@ deploy:
         --set yelbappserver.env.RACK_ENV=production
         --set yelbui.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME
         --set yelbui.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
+        --set yelbui.env.UI_ENV=prod
         --wait
         --timeout 300s
         --atomic
