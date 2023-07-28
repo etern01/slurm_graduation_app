@@ -85,7 +85,7 @@ deploy:
   image: centosadmin/kubernetes-helm:latest
   environment:
     name: $DEPLOY_VARIABLE
-    url: https://s015605.site/
+    
 
   variables:
     KUBECONFIG: /tmp/.kubeconfig
@@ -127,7 +127,7 @@ deploy:
 
     - if: '$CI_COMMIT_REF_NAME != "main"'
       variables:
-        YELB_DB_SERVER_ENDPOINT: $DB_SERVER_DEV
+        YELB_DB_SERVER_ENDPOINT: $DB_SERVER
         YELB_DB_SERVER_USER: $DB_SERVER_USER_DEV
         YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD_DEV
         YELB_DB_NAME: $DB_NAME_DEV
