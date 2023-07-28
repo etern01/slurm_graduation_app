@@ -9,6 +9,8 @@ metadata:
     component: app
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+
   name: {{ .Values.yelbui.name }}
 spec:
   rules:
@@ -23,5 +25,10 @@ spec:
                 name: {{ .Values.yelbui.name }}
                 port:
                   number: {{ .Values.yelbui.service.port }}
+  tls:
+    - hosts:
+      - {{ .Values.yelbui.ingress.host }}
+      secretName: {{ .Values.yelbui.ingress.host }}
+
 
 
