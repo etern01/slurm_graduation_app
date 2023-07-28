@@ -79,7 +79,7 @@ deploy:
     - helm upgrade --install $APP_NAME .helm
         --set yelbappserver.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME
         --set yelbappserver.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-        --set yelbappserver.env={"YELB_DB_SERVER_ENDPOINT":"rc1a-y748ih7sfsdthow9.mdb.yandexcloud.net", "YELB_DB_SERVER_USER":"yelbduser"}
+        --set yelbappserver.env='{"YELB_DB_SERVER_ENDPOINT":"rc1a-y748ih7sfsdthow9.mdb.yandexcloud.net", "YELB_DB_SERVER_USER":"yelbduser"}'
         --set yelbui.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME
         --set yelbui.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
         --wait
