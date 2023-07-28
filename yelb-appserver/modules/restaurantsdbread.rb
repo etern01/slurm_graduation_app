@@ -16,7 +16,7 @@ def restaurantsdbread(restaurant)
     else 
         con = PG.connect  :host => $yelbdbhost,
                         :port => $yelbdbport,
-                        :dbname => $yelbdbname,
+                        :dbname => $yelbdname,
                         :user =>  $yelbdbuser,
                         :password =>  $yelbdbpassword
         con.prepare('statement1', 'SELECT count FROM restaurants WHERE name =  $1')
