@@ -55,10 +55,13 @@ configure :test do
   set :awsregion => ENV['AWS_REGION']
 end
 configure :development do
-  set :redishost, "localhost"
+  set :redishost, "redis-server"
   set :port, 4567
-  set :yelbdbhost => "localhost"
-  set :yelbdbport => 5432
+  set :yelbdbhost => ENV['YELB_DB_SERVER_ENDPOINT']
+  set :yelbdbport => ENV['YELB_DB_SERVER_PORT']
+  set :yelbdbuser => ENV['YELB_DB_SERVER_USER']
+  set :yelbdbpass => ENV['YELB_DB_SERVER_PASSWORD']
+  set :yelbdname => ENV['YELB_DB_NAME']
   set :yelbddbrestaurants => ENV['YELB_DDB_RESTAURANTS']
   set :yelbddbcache => ENV['YELB_DDB_CACHE']
   set :awsregion => ENV['AWS_REGION']
@@ -86,11 +89,11 @@ end
 
 
 $yelbdbhost = settings.yelbdbhost
-$redishost = settings.redishost
-$yelbdbport = ENV['YELB_DB_SERVER_PORT']
-$yelbdbuser = ENV['YELB_DB_SERVER_USER']
-$yelbdbpass = ENV['YELB_DB_SERVER_PASSWORD']
-$yelbdname  = ENV['YELB_DB_NAME']
+$redishost  = settings.redishost
+$yelbdbport = settings.yelbdbport
+$yelbdbuser = settings.yelbdbuser
+$yelbdbpass = settings.yelbdbpass
+$yelbdname  = settings.yelbdname
 # the yelbddbcache, yelbdbrestaurants and the awsregion variables are only intended to use in the serverless scenario (DDB)
 if (settings.yelbddbcache != nil) then $yelbddbcache = settings.yelbddbcache end 
 if (settings.yelbddbrestaurants != nil) then $yelbddbrestaurants = settings.yelbddbrestaurants end 

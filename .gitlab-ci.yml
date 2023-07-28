@@ -1,19 +1,31 @@
 variables:
   K8S_API_URL: https://158.160.109.92
-  DOCKER_REGISTRY: s015605.gitlab.yandexcloud.net/
-  DOCKER_USERNAME: $CI_REGISTRY_USER
-  DOCKER_PASSWORD: $CI_REGISTRY_PASSWORD
   FRONTEND_NAME: yelb-ui
   BACKEND_NAME: yelb-appserver
   APP_NAME:  yelb
-
+  
 
 stages:
+  - lint
   - build
   - test
   - cleanup
   - push
   - deploy
+
+lint-yaml:
+  stage: lint
+  image:
+    name: cytopia/yamllint
+    entrypoint: ["/bin/ash", "-c"]
+  script:
+    - yamllint -f colored .
+
+lint-helm:
+  stage: lint
+  image: alpine/k8s:1.24.15
+  script:
+    - helm lint .helm
 
 build:backend:
   stage: build
@@ -66,7 +78,9 @@ deploy:
   stage: deploy
   image: centosadmin/kubernetes-helm:latest
   environment:
-    name: production
+    name: $DEPLOY_VARIABLE
+    url: https://s015605.site/
+
   variables:
     KUBECONFIG: /tmp/.kubeconfig
 
@@ -79,12 +93,12 @@ deploy:
     - helm upgrade --install $APP_NAME .helm
         --set yelbappserver.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME
         --set yelbappserver.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
-        --set yelbappserver.env.YELB_DB_SERVER_ENDPOINT=rc1a-y748ih7sfsdthow9.mdb.yandexcloud.net
-        --set yelbappserver.env.YELB_DB_SERVER_USER=yelbduser
-        --set yelbappserver.env.YELB_DB_SERVER_PASSWORD=yelbduser
-        --set yelbappserver.env.YELB_DB_NAME=yelbdatabase
-        --set yelbappserver.env.RACK_ENV=production
-        --set yelbui.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME
+        --set yelbappserver.env.YELB_DB_SERVER_ENDPOINT=$YELB_DB_SERVER_ENDPOINT
+        --set yelbappserver.env.YELB_DB_SERVER_USER=$YELB_DB_SERVER_USER
+        --set yelbappserver.env.YELB_DB_SERVER_PASSWORD=$YELB_DB_SERVER_PASSWORD
+        --set yelbappserver.env.YELB_DB_NAME=$YELB_DB_NAME
+        --set yelbappserver.env.RACK_ENV=$DEPLOY_VARIABLE
+        --set yelbui.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME
         --set yelbui.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
         --set yelbui.env.UI_ENV=prod
         --wait
@@ -92,5 +106,28 @@ deploy:
         --atomic
         --debug
         --namespace $APP_NAME-$CI_ENVIRONMENT_NAME
-  only:
-    - main
+  rules:
+    # Использование rules для определения переменных в зависимости от ветки
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+      
+      variables:
+        YELB_DB_SERVER_ENDPOINT: $DB_SERVER
+        YELB_DB_SERVER_USER: $DB_SERVER_USER
+        YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD
+        YELB_DB_NAME: $DB_NAME
+        $DEPLOY_VARIABLE: production
+
+  
+
+    - if: '$CI_COMMIT_REF_NAME != "main"'
+      variables:
+        YELB_DB_SERVER_ENDPOINT: $DB_SERVER_DEV
+        YELB_DB_SERVER_USER: $DB_SERVER_USER_DEV
+        YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD_DEV
+        YELB_DB_NAME: $DB_NAME_DEV
+        $DEPLOY_VARIABLE: develop
+
+      
+
+
+ 
