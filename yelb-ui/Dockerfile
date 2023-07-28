@@ -1,4 +1,4 @@
-FROM node:14.21-buster
+FROM node:14.21-buster AS  builder
 
 WORKDIR /
 
@@ -33,7 +33,7 @@ RUN ng build --environment=dev --output-path=./dev/dist/
 
 
 FROM nginx:1.17.10
-MAINTAINER massimo@it20.info
+
 
 WORKDIR /
 ADD startup.sh startup.sh
@@ -42,9 +42,9 @@ ENV UI_ENV=prod
 
 RUN chmod +x startup.sh
 
-COPY --from=0 /clarity-seed/src/prod/dist /clarity-seed/prod/dist
-COPY --from=0 /clarity-seed/src/test/dist /clarity-seed/test/dist
-COPY --from=0 /clarity-seed/src/dev/dist /clarity-seed/dev/dist
+COPY --from=builder /clarity-seed/src/prod/dist /clarity-seed/prod/dist
+COPY --from=builder /clarity-seed/src/test/dist /clarity-seed/test/dist
+COPY --from=builder /clarity-seed/src/dev/dist /clarity-seed/dev/dist
 
 CMD ["./startup.sh"]
 

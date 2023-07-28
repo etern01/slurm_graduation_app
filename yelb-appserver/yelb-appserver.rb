@@ -27,7 +27,9 @@ disable :protection
 # if you choose 'custom' with RACK_ENV, all systems variables in the section need to be set before launching the yelb-appserver application
 # the DDB/Region variables in test/development are there for convenience (there is no logic to avoid exceptions when reading these variables) 
 # there is no expectations to be able to use DDB for test/dev 
- 
+
+
+
 configure :production do
   set :redishost, "redis-server"
   set :port, 4567
@@ -80,6 +82,8 @@ options "*" do
 
   halt HTTP_STATUS_OK
 end
+
+
 
 $yelbdbhost = settings.yelbdbhost
 $redishost = settings.redishost
