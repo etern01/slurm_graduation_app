@@ -4,10 +4,6 @@ variables:
   BACKEND_NAME: yelb-appserver
   APP_NAME:  yelb
 
-
-
-  
-
 stages:
   - lint
   - build
@@ -128,8 +124,7 @@ deploy:
   image: centosadmin/kubernetes-helm:latest
   environment:
     name: $DEPLOY_VARIABLE
-    
-
+    url:  $DEPLOY_URL
   variables:
     KUBECONFIG: /tmp/.kubeconfig
 
@@ -150,6 +145,7 @@ deploy:
         --set yelbui.image=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME-$CI_ENVIRONMENT_NAME
         --set yelbui.imageTag=$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID
         --set yelbui.env.UI_ENV=prod
+        --set yelbui.ingress.host=$DEPLOY_URL
         --wait
         --timeout 300s
         --atomic
@@ -158,16 +154,13 @@ deploy:
   rules:
     # Использование rules для определения переменных в зависимости от ветки
     - if: '$CI_COMMIT_REF_NAME == "main"'
-      
       variables:
         YELB_DB_SERVER_ENDPOINT: $DB_SERVER
         YELB_DB_SERVER_USER: $DB_SERVER_USER
         YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD
         YELB_DB_NAME: $DB_NAME
         DEPLOY_VARIABLE: production
-
-  
-
+        DEPLOY_URL: s015605.site
     - if: '$CI_COMMIT_REF_NAME != "main"'
       variables:
         YELB_DB_SERVER_ENDPOINT: $DB_SERVER
@@ -175,6 +168,7 @@ deploy:
         YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD_DEV
         YELB_DB_NAME: $DB_NAME_DEV
         DEPLOY_VARIABLE: develop
+        DEPLOY_URL: develop.s015605.site
 
       
 
