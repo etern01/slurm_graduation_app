@@ -3,6 +3,8 @@ variables:
   FRONTEND_NAME: yelb-ui
   BACKEND_NAME: yelb-appserver
   APP_NAME:  yelb
+
+
   
 
 stages:
@@ -39,6 +41,14 @@ build:backend:
   script:
     - cd $BACKEND_NAME
     - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$BACKEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID .
+  rules:
+    # Использование rules для определения переменных в зависимости от ветки
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+      variables:
+        DEPLOY_VARIABLE: production
+    - if: '$CI_COMMIT_REF_NAME != "main"'
+      variables:
+        DEPLOY_VARIABLE: develop
 
 build:frontend:
   stage: build
@@ -46,6 +56,14 @@ build:frontend:
   script:
     - cd $FRONTEND_NAME
     - docker build -t $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$FRONTEND_NAME:$CI_COMMIT_REF_SLUG.$CI_PIPELINE_ID .
+  rules:
+    # Использование rules для определения переменных в зависимости от ветки
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+      variables:
+        DEPLOY_VARIABLE: production
+    - if: '$CI_COMMIT_REF_NAME != "main"'
+      variables:
+        DEPLOY_VARIABLE: develop
 
 test:
   stage: test
@@ -59,6 +77,15 @@ test:
         --abort-on-container-exit
         --exit-code-from test
         --quiet-pull
+  rules:
+    # Использование rules для определения переменных в зависимости от ветки
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+      variables:
+        DEPLOY_VARIABLE: production
+    - if: '$CI_COMMIT_REF_NAME != "main"'
+      variables:
+        DEPLOY_VARIABLE: develop
+
 
 cleanup:
   stage: cleanup
