@@ -21,7 +21,7 @@ variables:
           YELB_DB_SERVER_USER: $DB_SERVER_USER_DEV
           YELB_DB_SERVER_PASSWORD: $DB_SERVER_PASSWORD_DEV
           YELB_DB_NAME: $DB_NAME_DEV
-          DEPLOY_VARIABLE: development
+          DEPLOY_VARIABLE: develop
           DEPLOY_URL: develop.s015605.site
 
 stages:
@@ -147,6 +147,7 @@ deploy:
         --atomic
         --debug
         --namespace $APP_NAME-$CI_ENVIRONMENT_NAME
+        --create-namespace
   extends:
     - .rules
       
