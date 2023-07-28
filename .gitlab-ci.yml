@@ -70,6 +70,8 @@ cleanup:
   when: always
 
 push:
+  environment:
+    name: $DEPLOY_VARIABLE
   image: docker:latest
   stage: push
   before_script:
