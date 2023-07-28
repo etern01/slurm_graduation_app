@@ -9,7 +9,7 @@ imagePullSecret: k8s-docker
 yelbui:
   name: yelb-ui
   image: s015605.gitlab.yandexcloud.net:5050/etern0/graduation_work/yelb-ui
-  imageTag: main.101
+  imageTag: main.102
   imagePullSecret: k8s-docker
   replicas: 3
 
@@ -35,7 +35,7 @@ yelbui:
 yelbappserver:
   name: yelb-appserver
   image: s015605.gitlab.yandexcloud.net:5050/etern0/graduation_work/yelb-appserver
-  imageTag: main.101
+  imageTag: main.102
   imagePullSecret: k8s-docker
   replicas: 3
 
