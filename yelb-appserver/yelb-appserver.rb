@@ -54,7 +54,7 @@ configure :test do
   set :yelbddbcache => ENV['YELB_DDB_CACHE']
   set :awsregion => ENV['AWS_REGION']
 end
-configure :development do
+configure :develop do
   set :redishost, "redis-server"
   set :port, 4567
   set :yelbdbhost => ENV['YELB_DB_SERVER_ENDPOINT']
