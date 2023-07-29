@@ -1,92 +1,67 @@
-# graduation_work
+# Репозиторий приложения YELB.
 
+Это репозиторий  приложения Yelb.
 
+Код, необходимый для создания и настройки инфраструктуры, необходимой для запуска этого приложения, находится в [IaC-репозитории](https://github.com/Osmos-GT/slurm-graduation-iac). Используются Gitlab CI, Terraform и Yandex cloud.
 
-## Getting started
+Приложение состоит из следующих сервисов:
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+* yelb-appserver
+* yelb-ui
+* база данных Postgresql (в облаке yandex )
+* сервер Redis
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Построенный в данном репозитории пайплайн собирает, проверяет и деплоит yelb-appserver и yelb-ui. 
+После установки приложение будет доступно по адресу https://s015605.site
 
-## Add your files
+## Этапы пайплайна
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+#### Lint
+Параллельно выполняющиеся yamllint и helm lint.
 
-```
-cd existing_repo
-git remote add origin https://s015605.gitlab.yandexcloud.net/etern0/graduation_work.git
-git branch -M main
-git push -uf origin main
-```
+#### Build
+Сборка appserver и ui, осуществляемая параллельно.
+Собранный образ загружается в registry, после чего раннер удаляет лишние образы, чтобы не захламлять ноду, на которой он работает. При этом, на ноде остается по одному собранному образу appserver и ui, используемые в качестве кэша, что позволяет кратно уменьшить время сборки.
 
-## Integrate with your tools
+#### Test
+Вначале запускается и проверяется appserver, а после него UI.
 
-- [ ] [Set up project integrations](https://s015605.gitlab.yandexcloud.net/etern0/graduation_work/-/settings/integrations)
+#### Obtain-deploy-token
+Если в хранилище нет переменных с деплой-токеном, то в пайпплайн добавляется этот этап.
+Полученные через API имя пользователя и пароль автоматически добавляются в хранилище переменных.
 
-## Collaborate with your team
+#### Deploy
+Деплой приложения в k8s.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+## Переменные
 
-## Test and Deploy
+IaC-репозиторий и настоящий App-репозиторий должны находиться в одной группе репозиториев Gitlab.
 
-Use the built-in continuous integration in GitLab.
+Перед началом работы необходимо добавить в группу Yelb следующие переменные:
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- GITLAB_PRIVATE_TOKEN
+Private token аккаунта в гитлабе, использующийся для работы с API gitlab. 
 
-***
+- SA_KEY
+Ключ сервисного аккаунта, от имени которого Terraform будет создавать и удалять ресурсы.
+Можно получить так:
+```yc iam key create --service-account-name <имя сервисного аккаунта> --output key.json --folder-id <id каталога в облаке>```
 
-# Editing this README
+- TF_VAR_YC_CLOUD_ID
+ID облака
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- TF_VAR_YC_FOLDER_ID
+ID каталога в облаке
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- YELB_DB_USER
+Имя пользователя для подключения к базе данных
 
-## Name
-Choose a self-explaining name for your project.
+- YELB_DB_PASS
+Пароль для подключения к базе данных
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- YELB_DB_PORT
+Номер порта для подключения к базе данных
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+В ходе выполнения IaC-пайплайна через API гитлаба будет создана переменная YELB_DB_ADDR с адресом мастер-хоста базы данных.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+При выполнении пайплайна в данном репозитории через API будут запрошены в Gitlab и добавлены переменные DEPLOY_TOKEN_USER и DEPLOY_TOKEN_PASS для доступа к хранилищу образов в случае, если они отсутствуют.
