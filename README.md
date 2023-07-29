@@ -17,39 +17,18 @@
 После установки приложение будет доступно по адресу https://s015605.site/
 
 Для запуска приложения в production среде создайте необходимые переменны
-DB_SERVER - адрес postgress
-DB_SERVER_USER - имя пользователя postgress
-DB_SERVER_PASSWORD - пароль пользователя postgress
-DB_NAME - имя базы данных postgress
+* DB_SERVER - адрес postgress
+* DB_SERVER_USER - имя пользователя postgress
+* DB_SERVER_PASSWORD - пароль пользователя postgress
+* DB_NAME - имя базы данных postgress
 
 Для запуска приложения в develop среде создайте необходимые переменны
-DB_SERVER - адрес postgress
-DB_SERVER_USER_DEV - имя пользователя postgress
-DB_SERVER_PASSWORD_DEV - пароль пользователя postgress
-DB_NAME_DEV - имя базы данных postgress
+* DB_SERVER - адрес postgress
+* DB_SERVER_USER_DEV - имя пользователя postgress
+* DB_SERVER_PASSWORD_DEV - пароль пользователя postgress
+* DB_NAME_DEV - имя базы данных postgress
 
 Содзайте в кластере kuberneters serviceaccount.
-Пример:
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: gitlab-admin
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: gitlab-admin
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: gitlab-admin
-  namespace: kube-system
-
 Создайте токен для serviceaccount и добавьте его в ci.
 Пример: 
 k create token --namespace kube-system gitlab-admin --duration=999999h
