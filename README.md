@@ -59,6 +59,8 @@ k create token --namespace kube-system gitlab-admin --duration=999999h
 kubectl create namespace yelb-development
 kubectl create namespace yelb-production
 
+Создайте clusterissuer из корня проекта
+
 
 
 # Документация по переменным
