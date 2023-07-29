@@ -1,5 +1,5 @@
 variables:
-  K8S_API_URL: https://158.160.109.92
+  K8S_API_URL: https://158.160.100.194
   FRONTEND_NAME: yelb-ui
   BACKEND_NAME: yelb-appserver
   APP_NAME:  yelb
